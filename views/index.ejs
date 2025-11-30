@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Traffic Junction Simulation</title>
+  <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+  <!-- top bar with counters -->
+  <header class="topbar">
+    <div class="title">Traffic Junction Simulation</div>
+    <div class="counters">
+      <div class="counter">N: <span id="count-n">0</span></div>
+      <div class="counter">E: <span id="count-e">0</span></div>
+      <div class="counter">S: <span id="count-s">0</span></div>
+      <div class="counter">W: <span id="count-w">0</span></div>
+    </div>
+    <div class="priority">Priority: Ambulance &gt; Firefighter</div>
+  </header>
+
+  <main>
+    <div class="intersection">
+      <div class="road-cross"></div>
+      <div class="road-strips"></div>
+
+      <!-- NORTH lane -->
+      <div class="lane north" data-direction="south">
+        <div class="light" style="top: 8%;"><div class="bulb red on"></div><div class="bulb green"></div></div>
+        <div class="queue" id="lane-north"></div>
+      </div>
+
+      <!-- EAST lane -->
+      <div class="lane east" data-direction="west">
+        <div class="light" style="right: 8%;"><div class="bulb red on"></div><div class="bulb green"></div></div>
+        <div class="queue" id="lane-east"></div>
+      </div>
+
+      <!-- SOUTH lane -->
+      <div class="lane south" data-direction="north">
+        <div class="light" style="bottom: 8%;"><div class="bulb red on"></div><div class="bulb green"></div></div>
+        <div class="queue" id="lane-south"></div>
+      </div>
+
+      <!-- WEST lane -->
+      <div class="lane west" data-direction="east">
+        <div class="light" style="left: 8%;"><div class="bulb red on"></div><div class="bulb green"></div></div>
+        <div class="queue" id="lane-west"></div>
+      </div>
+
+      
+      
+    </div>
+  </main>
+
+  <!-- footer status -->
+  <footer class="status">
+    <div id="info">Time: 0s | Green: North | Emergencies: 0 | Threshold: 6</div>
+  </footer>
+
+  <script src="/public/client.js"></script>
+</body>
+</html>

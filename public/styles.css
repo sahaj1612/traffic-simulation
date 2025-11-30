@@ -1,0 +1,243 @@
+:root{
+  --bg: #ffffff;
+  --road: #000000;
+  --lane-thickness: 24vmin;    /* road width */
+  --car-width-vertical: 18px;
+  --car-height-vertical: 30px;
+  --car-width-horizontal: 30px;
+  --car-height-horizontal: 18px;
+}
+
+/* ---------- GENERAL PAGE ---------- */
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; background:var(--bg); font-family:Arial, Helvetica, sans-serif; overflow:hidden; }
+
+/* ---------- TOP HEADER ---------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 14px; background:#fff; border-bottom:1px solid #ddd;
+  position:fixed; top:0; left:0; right:0; z-index:50;
+}
+.topbar .title{ font-weight:700; }
+.counters{ display:flex; gap:12px; }
+.counter{ font-weight:600; }
+.priority{ font-size:13px; color:#333; }
+
+/* ---------- MAIN SPACE ---------- */
+main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
+
+/* ---------- INTERSECTION ---------- */
+.intersection{
+  position:relative;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:white;
+}
+
+/* ----- BLACK ROAD CROSS (H & V bars) ----- */
+.road-cross{ position:absolute; inset:0; z-index:1; pointer-events:none; background:transparent; }
+.road-cross::before{
+  content:"";
+  position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+  height:var(--lane-thickness); background:var(--road);
+}
+.road-cross::after{
+  content:"";
+  position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+  width:var(--lane-thickness); background:var(--road);
+}
+
+/* ----- WHITE DASHED CENTER LINES ----- */
+.road-strips{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+.road-strips::before{
+  content:""; position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+  height:0.9vmin;
+  background:repeating-linear-gradient(90deg, white 0 6vmin, transparent 6vmin 12vmin);
+  opacity:.95;
+}
+.road-strips::after{
+  content:""; position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+  width:0.9vmin;
+  background:repeating-linear-gradient(0deg, white 0 6vmin, transparent 6vmin 12vmin);
+  opacity:.95;
+}
+
+/* ---------- LANES ---------- */
+.lane{ position:absolute; display:flex; align-items:center; justify-content:center; z-index:10; }
+.lane.north{ top:0; left:50%; transform:translateX(-50%); height:var(--lane-thickness); width:18vmin; flex-direction:column-reverse; }
+.lane.south{ bottom:0; left:50%; transform:translateX(-50%); height:var(--lane-thickness); width:18vmin; }
+.lane.west{ left:0; top:50%; transform:translateY(-50%); width:var(--lane-thickness); height:18vmin; flex-direction:row; }
+.lane.east{ right:0; top:50%; transform:translateY(-50%); width:var(--lane-thickness); height:18vmin; flex-direction:row-reverse; }
+
+/* Queue container */
+.lane .queue{ display:flex; gap:6px; align-items:center; justify-content:flex-end; padding:1vmin; z-index:15; }
+
+/* ---------- STOP LINES ---------- */
+.lane::after{ content:''; position:absolute; background:white; z-index:9; }
+.lane.north::after{ left:50%; bottom:calc(var(--lane-thickness) - 8vmin); width:10vmin; height:0.6vmin; transform:translateX(-50%); }
+.lane.south::after{ left:50%; top:calc(var(--lane-thickness) - 8vmin); width:10vmin; height:0.6vmin; transform:translateX(-50%); }
+.lane.west::after{ top:50%; right:calc(var(--lane-thickness) - 8vmin); height:10vmin; width:0.6vmin; transform:translateY(-50%); }
+.lane.east::after{ top:50%; left:calc(var(--lane-thickness) - 8vmin); height:10vmin; width:0.6vmin; transform:translateY(-50%); }
+
+/* ---------- TRAFFIC LIGHT (rectangular black box) ---------- */
+/* make .light itself the black rectangular box with bulbs stacked vertically */
+.light{
+  position:absolute;
+  z-index:40;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:center;
+  padding:8px;
+  background:#000;            /* black rectangular box */
+  border-radius:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.35);
+  color:transparent;          /* hide any possible text */
+}
+
+/* bulbs inside the black box */
+.bulb{
+  width:12px;
+  height:12px;
+  border-radius:2px;
+  background:#222;
+  box-shadow: inset 0 -2px rgba(0,0,0,0.6);
+}
+.bulb.red.on{ background:#d03030; box-shadow:0 0 6px rgba(255,0,0,0.6); border-radius:2px; }
+.bulb.green.on{ background:#22cc22; box-shadow:0 0 6px rgba(0,255,0,0.6); border-radius:2px; }
+
+/* Position the black signal-box to the LEFT side of each road mouth.
+   The positions use calc() with --lane-thickness so the box sits outside/near the road mouth. */
+
+/* NORTH: place the black box to the left (west) of the north road mouth */
+.lane.north .light{
+  top:6%;
+  left: calc(50% - var(--lane-thickness) - 4vmin);
+  transform: translateX(0);
+  flex-direction:column;
+}
+
+/* SOUTH: left (west) of south road mouth */
+.lane.south .light{
+  bottom:6%;
+  left: calc(50% - var(--lane-thickness) - 4vmin);
+  transform: translateX(0);
+  flex-direction:column-reverse;
+}
+
+/* WEST lane: for west-facing road, left side of the road is upward (north) so place box above the west mouth */
+.lane.west .light{
+  left:6%;
+  top: calc(50% - var(--lane-thickness) - 4vmin);
+  transform: translateY(0);
+  flex-direction:column;
+}
+
+/* EAST lane: for east-facing road, left side is downward (south) so place box below the east mouth */
+.lane.east .light{
+  right:6%;
+  top: calc(50% - var(--lane-thickness) + 4vmin);
+  transform: translateY(0);
+  flex-direction:column-reverse;
+}
+
+/* ---------- NEW CAR DESIGN: vertical cars (N/S) and horizontal cars (E/W) ---------- */
+/* Default vertical car (north/south lanes) */
+.car{
+  width:var(--car-width-vertical);
+  height:var(--car-height-vertical);
+  background:#4a90e2;
+  border-radius:4px;
+  position:relative;
+  box-shadow:0 2px 4px rgba(0,0,0,0.25);
+}
+
+/* windshield for vertical car */
+.car::before{
+  content:"";
+  position:absolute;
+  top:3px;
+  left:3px;
+  right:3px;
+  height:9px;
+  background:#d9f3ff;
+  border-radius:2px;
+}
+
+/* bottom wheel line for vertical car */
+.car::after{
+  content:"";
+  position:absolute;
+  bottom:4px;
+  left:50%;
+  transform:translateX(-50%);
+  width:70%;
+  height:4px;
+  background:#111;
+  border-radius:2px;
+}
+
+/* Horizontal cars for east/west lanes: wider than tall */
+.lane.east .car,
+.lane.west .car {
+  width: var(--car-width-horizontal);
+  height: var(--car-height-horizontal);
+  border-radius:4px;
+}
+
+/* Adjust windshield for horizontal cars */
+.lane.east .car::before,
+.lane.west .car::before {
+  content:"";
+  position:absolute;
+  top:3px;
+  left:6px;
+  right:6px;
+  height:6px;
+  background:#d9f3ff;
+  border-radius:2px;
+}
+
+/* wheel line for horizontal cars */
+.lane.east .car::after,
+.lane.west .car::after {
+  content:"";
+  position:absolute;
+  bottom:3px;
+  left:50%;
+  transform:translateX(-50%);
+  width:60%;
+  height:3px;
+  background:#111;
+  border-radius:2px;
+}
+
+/* color variations */
+.c1{ background:#ff5252; }
+.c2{ background:#4a90e2; }
+.c3{ background:#50e3c2; }
+.c4{ background:#f5a623; }
+.c5{ background:#7e57c2; }
+
+/* ---------- CAR PASSING ANIMATION ---------- */
+.pass{ transition: transform 2.2s linear, opacity 1.2s linear; }
+
+/* travel distances remain the same for N/S, and E/W use X translation */
+.north .car.pass{ transform:translateY(40vmin); }
+.south .car.pass{ transform:translateY(-40vmin); }
+.west  .car.pass{ transform:translateX(40vmin); }
+.east  .car.pass{ transform:translateX(-40vmin); }
+
+/* ---------- FOOTER ---------- */
+.status{ position:fixed; bottom:0; left:0; right:0; padding:8px 12px; background:#fff; border-top:1px solid #eee; font-size:13px; z-index:60; }
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width:900px){
+  :root{ --lane-thickness: 28vmin; }
+}
+@media (max-width:700px){
+  :root{ --lane-thickness: 32vmin; --car-width-horizontal:26px; --car-width-vertical:14px; --car-height-vertical:24px; --car-height-horizontal:16px; }
+}
