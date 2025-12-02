@@ -124,7 +124,6 @@
 
 // Replace the existing releaseLane function with this
 
-// --- Replace existing releaseLane with this ---
 function releaseLane(l) {
   const q = laneQueues[l];
   if (!q || q.length === 0) return;
@@ -132,28 +131,24 @@ function releaseLane(l) {
   // snapshot how many cars are waiting right now (so spawns during green don't count)
   const releaseCount = Math.min(q.length, maxPerLane); // or set another per-green limit
 
-  // release cars one-by-one based on snapshot
   for (let i = 0; i < releaseCount; i++) {
-    // take the car that was at the front at the moment of green
     const car = q.shift();
     if (!car) continue;
 
-    // schedule visual pass; first car should start immediately (i * staggerBetweenCars)
     setTimeout(() => {
       if (!car.parentNode) return;
       car.classList.add('pass');
-      // remove DOM after the animation completes
       setTimeout(() => {
         if (car.parentNode) car.parentNode.removeChild(car);
       }, passAnimationDuration + 80);
     }, i * staggerBetweenCars);
   }
 
-  // ensure queue array exists and update UI
   laneQueues[l] = laneQueues[l] || [];
   updateCounts();
   updateInfoText();
 }
+
 
 
 
