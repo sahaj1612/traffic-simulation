@@ -72,6 +72,15 @@ main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
 .lane.west{ left:0; top:50%; transform:translateY(-50%); width:var(--lane-thickness); height:18vmin; flex-direction:row; }
 .lane.east{ right:0; top:50%; transform:translateY(-50%); width:var(--lane-thickness); height:18vmin; flex-direction:row-reverse; }
 
+/* Put this near the existing .lane .queue rule in styles.css */
+
+/* Queue orientation per lane so cars stack in a line toward the intersection */
+.lane.north .queue { flex-direction: column-reverse; align-items: center; justify-content: flex-start; }
+.lane.south .queue { flex-direction: column;      align-items: center; justify-content: flex-end;   }
+.lane.west  .queue { flex-direction: row;         align-items: center; justify-content: flex-end;   }
+.lane.east  .queue { flex-direction: row-reverse; align-items: center; justify-content: flex-start; }
+
+
 /* Queue container */
 .lane .queue{ display:flex; gap:6px; align-items:center; justify-content:flex-end; padding:1vmin; z-index:15; }
 

@@ -122,51 +122,54 @@
     updateInfoText();
   }
 
-  // release all cars from lane l (animate and remove)
-  function releaseLane(l) {
-    const q = laneQueues[l];
-    if (!q || q.length === 0) return;
+// Replace the existing releaseLane function with this
 
-    q.forEach((car, idx) => {
-      // stagger each car a bit so they don't all overlap
-      setTimeout(() => {
-        // ensure car still in DOM
-        if (!car.parentNode) return;
-        // add pass class to trigger CSS transform/transition
-        car.classList.add('pass');
+// --- Replace existing releaseLane with this ---
+function releaseLane(l) {
+  const q = laneQueues[l];
+  if (!q || q.length === 0) return;
 
-        // after animation ends, remove DOM element (slightly longer than CSS transition)
-        setTimeout(() => {
-          try {
-            if (car.parentNode) car.parentNode.removeChild(car);
-          } catch (e) {
-            /* ignore */
-          }
-        }, passAnimationDuration + 100);
-      }, idx * staggerBetweenCars);
-    });
+  // snapshot how many cars are waiting right now (so spawns during green don't count)
+  const releaseCount = Math.min(q.length, maxPerLane); // or set another per-green limit
 
-    // clear queue logically right away; visuals continue based on DOM elements
-    laneQueues[l] = [];
-    updateCounts();
-    updateInfoText();
-  }
+  // release cars one-by-one based on snapshot
+  for (let i = 0; i < releaseCount; i++) {
+    // take the car that was at the front at the moment of green
+    const car = q.shift();
+    if (!car) continue;
 
-  // main cycle: update lights and release active lane
-  function cycle() {
-    updateLights();
-    const activeLane = lanes[currentIndex];
-    // release after a small delay so lights change is visible before cars start moving
+    // schedule visual pass; first car should start immediately (i * staggerBetweenCars)
     setTimeout(() => {
-      releaseLane(activeLane);
-    }, 80);
-
-    // advance to next lane for next cycle
-    currentIndex = (currentIndex + 1) % lanes.length;
-
-    // update info text for UI feedback
-    updateInfoText();
+      if (!car.parentNode) return;
+      car.classList.add('pass');
+      // remove DOM after the animation completes
+      setTimeout(() => {
+        if (car.parentNode) car.parentNode.removeChild(car);
+      }, passAnimationDuration + 80);
+    }, i * staggerBetweenCars);
   }
+
+  // ensure queue array exists and update UI
+  laneQueues[l] = laneQueues[l] || [];
+  updateCounts();
+  updateInfoText();
+}
+
+
+
+function cycle() {
+  updateLights();
+  const activeLane = lanes[currentIndex];
+
+  // release immediately at green (no extra delay)
+  releaseLane(activeLane);
+
+  // advance to next lane for next cycle
+  currentIndex = (currentIndex + 1) % lanes.length;
+
+  updateInfoText();
+}
+
 
   // --- Initialization & loops ---
   // small initial spawn attempts so page is not empty
