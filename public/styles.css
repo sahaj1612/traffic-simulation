@@ -2,10 +2,12 @@
   --bg: #ffffff;
   --road: #000000;
   --lane-thickness: 24vmin;    /* road width */
-  --car-width-vertical: 18px;
-  --car-height-vertical: 30px;
-  --car-width-horizontal: 30px;
-  --car-height-horizontal: 18px;
+
+  /* increased car sizes slightly for better visibility */
+  --car-width-vertical: 22px;
+  --car-height-vertical: 36px;
+  --car-width-horizontal: 36px;
+  --car-height-horizontal: 22px;
 }
 
 /* ---------- GENERAL PAGE ---------- */
@@ -125,7 +127,7 @@ main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
 /* Queue container (base) */
 .lane .queue{
   display:flex;
-  gap:6px;
+  gap:8px; /* was 6px */
   align-items:center;
   justify-content:flex-end;
   padding:1vmin;
@@ -211,7 +213,6 @@ main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
 .bulb.red.on{ background:#d03030; box-shadow:0 0 6px rgba(255,0,0,0.6); border-radius:2px; }
 .bulb.green.on{ background:#22cc22; box-shadow:0 0 6px rgba(0,255,0,0.6); border-radius:2px; }
 
-/* Position the black signal-box to the LEFT side of each road mouth. */
 .lane.north .light{
   top:6%;
   left: calc(50% - var(--lane-thickness) - 4vmin);
@@ -246,6 +247,8 @@ main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
   border-radius:4px;
   position:relative;
   box-shadow:0 2px 4px rgba(0,0,0,0.25);
+  /* ensure transition is applied when .pass is added */
+  will-change: transform, opacity;
 }
 
 /* windshield for vertical car */
@@ -316,13 +319,14 @@ main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
 .c5{ background:#7e57c2; }
 
 /* ---------- CAR PASSING ANIMATION ---------- */
+/* Keep transition in .pass but also ensure base .car doesn't animate unexpectedly */
 .pass{ transition: transform 2.2s linear, opacity 1.2s linear; }
 
-/* travel distances remain the same for N/S, and E/W use X translation */
-.north .car.pass{ transform:translateY(40vmin); }
-.south .car.pass{ transform:translateY(-40vmin); }
-.west  .car.pass{ transform:translateX(40vmin); }
-.east  .car.pass{ transform:translateX(-40vmin); }
+/* increase travel distance so cars travel fully across the viewport/road */
+.north .car.pass{ transform:translateY(70vmin); }
+.south .car.pass{ transform:translateY(-70vmin); }
+.west  .car.pass{ transform:translateX(200vmin); }
+.east  .car.pass{ transform:translateX(-200vmin); }
 
 /* ---------- FOOTER ---------- */
 .status{
@@ -344,9 +348,9 @@ main{ padding-top:62px; height:calc(100vh - 62px); overflow:hidden; }
 @media (max-width:700px){
   :root{
     --lane-thickness: 32vmin;
-    --car-width-horizontal:26px;
-    --car-width-vertical:14px;
-    --car-height-vertical:24px;
-    --car-height-horizontal:16px;
+    --car-width-horizontal:30px;
+    --car-width-vertical:18px;
+    --car-height-vertical:28px;
+    --car-height-horizontal:20px;
   }
 }
